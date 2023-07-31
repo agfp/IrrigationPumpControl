@@ -14,8 +14,8 @@
 //-----------------------
 // System variables
 //-----------------------
-#define PUMP_RUN_TIME          14  // Minutes
-#define CLEAN_FILTER_ALERT     11  // Minutes
+#define PUMP_RUN_TIME          15  // Minutes
+#define CLEAN_FILTER_ALERT     12  // Minutes
 #define PUMP_CURRENT_THRESHOLD 1.5 // Amperes
 
 //-----------------------
