@@ -1,65 +1,58 @@
 void loop() {
-  setGeneralStatus();
+  writeOutputs();
 
-  if (readResetButton()) {
+  if (isResetButtonPressed()) {
     reset();
     return;
   }
-  if (_error) {
-    _pumpOn = false;
+  if (halt) {
+    pumpOn = false;
     return;
   }
-  secondLoop();
+  if (isPumpRunning()) {
+    pumpOn = true;
+    if (checkIfAlertIsNeeded()) {
+      alert = true;
+    }
+    if (checkIfHaltIsNeeded()) {
+      halt = true;
+    }
+    return;
+  }
+  pumpOn = false;
+  lastTimestamp = millis();
 }
 
-void secondLoop() {
-  if (readInput()) {
-    _pumpOn = true;
-    if (checkAlertInterval()) {
-      _alertThreshold = true;
-    }
-    if (checkErrorInterval()) {
-      _error = true;
-    }
-    return;
-  } else {
-    _pumpOn = false;
-    _lastTimestamp = millis();
-  }
+void writeOutputs() {
+  // Set LEDs:
+  digitalWrite(YELLOW_LED_PIN, alert ? HIGH : LOW);
+  digitalWrite(RED_LED_PIN, halt ? HIGH : LOW);
+  digitalWrite(GREEN_LED_PIN, pumpOn ? HIGH : LOW);
+  // Relay is on when LOW:
+  digitalWrite(RELAY_PIN, halt ? HIGH : LOW);
+}
+
+bool isResetButtonPressed() {
+  return digitalRead(RESET_BUTTON_PIN) == 0;
 }
 
 void reset() {
-  _lastTimestamp = millis();
-  _error = false;
-  _pumpOn = false;
-  _alertThreshold = false;
+  lastTimestamp = millis();
+  halt = false;
+  pumpOn = false;
+  alert = false;
 }
 
-bool readInput() {
-  float currentReading = _sensor.getCurrentAC(60);
+bool isPumpRunning() {
+  float currentReading = sensor.getCurrentAC(60);
   // Serial.println(String("I = ") + currentReading + " A");
   return currentReading > PUMP_CURRENT_THRESHOLD;
 }
 
-bool checkAlertInterval() {
-  return millis() > _lastTimestamp + ALERT_THRESHOLD;
+bool checkIfAlertIsNeeded() {
+  return millis() > lastTimestamp + ALERT_THRESHOLD;
 }
 
-bool checkErrorInterval() {
-  if (millis() > _lastTimestamp + MAX_RUN_TIME) {
-    _lastTimestamp = millis();
-    return true;
-  }
-  return false;
-}
-
-void setGeneralStatus() {
-  digitalWrite(RED_LED, _error ? HIGH : LOW);
-  digitalWrite(RELAY, _error ? HIGH : LOW);
-  digitalWrite(YELLOW_LED, _alertThreshold ? HIGH : LOW);
-  digitalWrite(GREEN_LED, _pumpOn ? HIGH : LOW);
-}
-
-bool readResetButton() {
-  return digitalRead(RESET_BUTTON) == 0;
+bool checkIfHaltIsNeeded() {
+  return millis() > lastTimestamp + MAX_RUN_TIME;
 }
