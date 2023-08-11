@@ -3,6 +3,7 @@ void loop() {
 
   if (isResetButtonPressed()) {
     reset();
+    saveState();
     return;
   }
   if (halt) {
@@ -16,8 +17,13 @@ void loop() {
     }
     if (checkIfHaltIsNeeded()) {
       halt = true;
+      saveState();
     }
     return;
+  }
+  if (alert) {
+    halt = true;
+    saveState();
   }
   pumpOn = false;
   lastTimestamp = millis();

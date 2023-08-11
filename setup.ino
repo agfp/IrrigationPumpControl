@@ -4,11 +4,12 @@ void setup() {
   pinMode(GREEN_LED_PIN, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(RESET_BUTTON_PIN, INPUT_PULLUP);
-  // Serial.begin(9600);
+  Serial.begin(9600);
   int zero = sensor.calibrate();
-  // Serial.println(String("Zero point for this sensor = ") + zero);
+  Serial << "Zero point for this sensor = " << zero << endl;
   // Relay starts turned off by default
   digitalWrite(RELAY_PIN, HIGH);
+  loadState();
   runLedTest();
 }
 

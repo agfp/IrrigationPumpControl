@@ -1,4 +1,4 @@
-#include "ACS712.h"
+#include <ACS712.h>
 
 //-----------------------
 // PINS
@@ -14,9 +14,9 @@
 //-----------------------
 // System variables
 //-----------------------
-#define PUMP_RUN_TIME          15  // Minutes
-#define CLEAN_FILTER_ALERT     12  // Minutes
-#define PUMP_CURRENT_THRESHOLD 1.5 // Amperes
+#define PUMP_RUN_TIME          14.0 // Minutes
+#define CLEAN_FILTER_ALERT     12.4 // Minutes
+#define PUMP_CURRENT_THRESHOLD  1.5 // Amperes
 
 //-----------------------
 // Global variables
@@ -30,3 +30,13 @@ bool halt = false;
 bool pumpOn = false;
 
 ACS712 sensor(ACS712_05B, CURRENT_SENSOR_PIN);
+
+//-----------------------
+// Serial helper
+//-----------------------
+template<typename T>
+Print& operator<<(Print& printer, T value) {
+  printer.print(value);
+  return printer;
+}
+const char endl = '\n';
